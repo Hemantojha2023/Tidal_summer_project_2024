@@ -33,13 +33,18 @@ for i, file_path in enumerate(file_paths):
     # Create the contour plot
     ax = axes[i]
     print(i)
-    if(i==2):
-        contour_amplitude = ax.imshow(ha,
-        aspect='auto',
-        vmin=0,
-        vmax=0.5,
-        extent=(0,360, -90, 90),
-        origin="lower")
+    if i == 2:
+        # Adjust ha array for plotting (roll 180 degrees)
+        ha_new=np.zeros_like(ha)
+        ha_new[:, :180] = ha[:, 180:]
+        ha_new[:, 180:] = ha[:, :180]
+        # Adjust hp array for plotting (roll 180 degrees)      
+        hp_new=np.zeros_like(hp)
+        hp_new[:, :180] = hp[:, 180:]
+        hp_new[:, 180:] = hp[:, :180]
+        contour_amplitude=ax.imshow(ha_new, extent=(0, 360, -90, 90),
+           origin='lower', vmin=0, vmax=0.5, aspect='auto')
+        contour_phase=ax.contour(np.linspace(0, 360, lon.size), lat,hp_new, colors='black', levels=5)
     else:
         contour_amplitude = ax.imshow(ha,
         aspect='auto',
@@ -47,12 +52,9 @@ for i, file_path in enumerate(file_paths):
         vmax=0.5,
         extent=(-180,180, -90, 90),
         origin="lower")
-   # ax.colorbar(contour_amplitude, label='Amplitude (ha)')
-    #contour = ax.contourf(lon, lat, hp, cmap='viridis', levels=50)
-#    if(i==2):
-#        ax.contour(lon, lat, hp, colors='black', levels=5)
-#    else:
-    ax.contour(lon, lat, hp, colors='black', levels=5)
+        contour_phase = ax.contour(lon, lat, hp, colors='black', levels=5)
+
+    #ax.contour(lon, lat, hp, colors='black', levels=5)
     ax.set_title(plot_titles[i])
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
